@@ -36,7 +36,6 @@ const App = () => {
     return Math.round((good / countTotalFeedback()) * 100);
   }
 
-
   return (
     <>
       <Section title="Please leave feedbeck">
