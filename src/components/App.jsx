@@ -1,57 +1,64 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import FeedbackOptions from './Feedback/FeedbackOptions';
 import Notification from './Notification/Notification';
 import Section from './Section/Section';
 import Statistics from './Statistic/Statistics';
 
-export default class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0
-  }
+const btnsKeys = ['good', 'neutral', 'bad'];
 
-  updateState = (key) => {
-    this.setState((state) =>
-      ({ ...state, [key]: state[key] + 1 })
-    );
-  };
+const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
-  countTotalFeedback = () => {
-    return this.state.good + this.state.neutral + this.state.bad;
-  }
+  const updateState = (key) => {
+    switch (key) {
+      case 'good':
+        setGood(good + 1)
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1)
+        break;
+      case 'bad':
+        setBad(bad + 1)
+        break;
 
-  countPositiveFeedbackPercentage = () => {
-    return Math.round((this.state.good / this.countTotalFeedback()) * 100);
-  }
-
-  render() {
-    const stateKey = [];
-    for (const key in this.state) {
-      stateKey.push(key);
+      default:
+        break;
     }
+  }
 
-    return (
-      <>
-        <Section title="Please leave feedbeck">
-          <FeedbackOptions
-            keys={stateKey}
-            updateState={this.updateState}
+  const countTotalFeedback = () => {
+    return good + neutral + bad;
+  }
+
+  const countPositiveFeedbackPercentage = () => {
+    return Math.round((good / countTotalFeedback()) * 100);
+  }
+
+
+  return (
+    <>
+      <Section title="Please leave feedbeck">
+        <FeedbackOptions
+          keys={btnsKeys}
+          updateState={updateState}
+        />
+      </Section>
+      <Section title="Statistics">
+        {countTotalFeedback() ? (
+          <Statistics
+            stateKey={btnsKeys}
+            state={{ good, neutral, bad }}
+            total={countTotalFeedback}
+            positivePercentage={countPositiveFeedbackPercentage}
           />
-        </Section>
-        <Section title="Statistics">
-          {this.countTotalFeedback() ? (
-            <Statistics
-              stateKey={stateKey}
-              state={this.state}
-              total={this.countTotalFeedback}
-              positivePercentage={this.countPositiveFeedbackPercentage}
-            />
-          ) : (
-            <Notification message="There is no feedback" />
-          )}
-        </Section>
-      </>
-    )
-  };
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
+      </Section>
+    </>
+  )
 }
+
+export default App
